@@ -7,16 +7,25 @@ import Vault from '../components/Vault'
 import Landing from "../components/Layout/Landing"
 const inter = Inter({ subsets: ['latin'] })
 
+export interface VaultItem {
+  website: string;
+  username: string;
+}
+
 export default function Home() {
 
    const [step, setStep] = useState<"login" | "register" | "vault">("login")
+   const [vault, setVault] = useState<VaultItem[]>([])
+   const [vaultKey, setVaultKey] = useState('')
+
 
   return (
     <main
       className={` ${inter.className}`}
     >
-      {/* <Landing/> */} 
-      {step === "register" && <RegisterForm/>}
+      {/* <RegisterForm setStep={setStep} setVaultKey={setVaultKey} /> */}
+      {step === "register" && 
+      <RegisterForm setStep={setStep} setVaultKey={setVaultKey} />}
       {step === "login" && <LoginForm/>}
       {step === "vault" && <Vault/>}
 

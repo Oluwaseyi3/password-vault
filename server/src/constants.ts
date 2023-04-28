@@ -1,5 +1,8 @@
-export const DB_CONNECTION = process.env.DB_CONNECTION 
+export const DB_CONNECTION = "mongodb+srv://seyi:bamboo@cluster0.0jotmug.mongodb.net/test"
 
-// || "mongodb://localhost:27017/password-manager"
+
 
 export const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3000"
+export const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || "localhost"
+
+

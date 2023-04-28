@@ -1,6 +1,6 @@
 import createServer from "../utils/createServer";
 import Fastify from 'fastify'
-import { disconnectFromDB } from "../utils/db";
+import { disconnectFromDB, connectToDb } from "../utils/db";
 import {FastifyInstance} from "fastify"
 import logger from "../utils/logger"
 const fastify = Fastify({
@@ -8,42 +8,40 @@ const fastify = Fastify({
 })
 
 
-const shutDown = async(signal: string, app:FastifyInstance) => {
+function gracefulShutdown(signal: string, app: FastifyInstance) {
+  process.on(signal, async () => {
+    logger.info(`Goodbye, got signal ${signal}`);
 
-    process.on(signal,async () => {
-      logger.info(`Goodbye, i got a signal from ${signal}`)  
-    })
+    app.close();
 
-    app.close()
-    //close fastify instance
+    await disconnectFromDB();
 
-    await disconnectFromDB()
-    logger.info("Catch you later. See ya")
-    process.exit(0)
+    logger.info("My work here is done");
+
+    process.exit(0);
+  });
 }
 
+async function main() {
+  const app = createServer();
 
+  try {
+    const url = await app.listen(4000, "0.0.0.0");
 
+    logger.info(`Server is ready at ${url}`);
 
-const main = async() => {
-    const app = createServer()
-    try {
-        const url =   await fastify.listen({ port: 4000, host: "0.0.0.0" })
-        logger.info(`Server is ready at ${url}`);
-        
-      } catch (err) {
-        fastify.log.error(err)
-        process.exit(1)
-      }
+    await connectToDb();
+    
+  } catch (e) {
+    logger.error(e);
+    process.exit(1);
+  }
 
+  const signals = ["SIGTERM", "SIGINT"];
 
-    //   const signals = ["SIGTERM", "SIGINT"]
+  for (let i = 0; i < signals.length; i++) {
+    gracefulShutdown(signals[i], app);
+  }
+}
 
-    //   for (let i = 0; i < signals.length; i++) {
-    //     shutDown(signals[i], app)
-        
-    //   }
-    }
-
- 
-main()
+main();

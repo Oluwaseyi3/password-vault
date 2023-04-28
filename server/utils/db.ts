@@ -9,6 +9,9 @@ export async function connectToDb(){
     try {
         
         await mongoose.connect(DB_CONNECTION || "string")
+       
+        console.log("Naso");
+        
     } catch (error) {
        logger.error(error, "Error connectiong to database") 
        process.exit(1)

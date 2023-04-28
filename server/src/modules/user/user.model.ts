@@ -1,4 +1,4 @@
-import { prop, getModelForClass} from "@typegoose/typegoose"
+import { prop, getModelForClass, pre} from "@typegoose/typegoose"
 import  argon2  from "argon2";
 
 @pre<User>("save", async function(next){
